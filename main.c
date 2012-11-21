@@ -9,42 +9,42 @@ void hw_init(struct node_data *nodes);
 static int get_trippoint(struct node_data *node, enum power_state state);
 static void set_node_output(struct node_data *node, enum power_state state);
 
-int global_debug = WARN;
+int global_debug = INFO;
 
 int main(int argc, char **argv){
   pthread_t temp_read_thread, pwm_out_thread, data_server_thread;
   void *do_temp_read(), *do_pwm_out(), *do_data_server();
   int i, quit=0;
 
-  extern struct node_data data[NUM_NODES];
+  extern struct system_data sysdata;
 
-  hw_init(data);
+  hw_init(sysdata.nodes);
 
-  pthread_create(&temp_read_thread, NULL, do_temp_read, &data);
-  pthread_create(&pwm_out_thread, NULL, do_pwm_out, &data);
-  pthread_create(&data_server_thread, NULL, do_data_server, &data);
+  pthread_create(&temp_read_thread, NULL, do_temp_read, &sysdata);
+  pthread_create(&pwm_out_thread, NULL, do_pwm_out, &sysdata.nodes);
+  pthread_create(&data_server_thread, NULL, do_data_server, &sysdata.nodes);
 
   while (!quit) {
     for (i=1; i<NUM_NODES; i++){
-      if (data[i].setting.type == PID){
-//        data[i].output.power= pid(data[i].temp.average);
+      if (sysdata.nodes[i].setting.type == PID){
+//        sysdata.nodes[i].output.power= pid(sysdata.nodes[i].temp.average);
       }
-      else if ((data[i].setting.type == ON_OFF) ||
-               (data[i].setting.type == COMPRESSOR)) {
-        if (data[i].setting.mode == HEAT) {
-          if ((data[i].temp.average < get_trippoint(&data[i], ON)) &&
-              (!power_is_on(&data[i])))
-                set_node_output(&data[i], ON);
-          if ((data[i].temp.average > get_trippoint(&data[i], OFF)) &&
-              (power_is_on(&data[i])))
-                set_node_output(&data[i], OFF);
-        } else if (data[i].setting.mode == COOL) {
-          if ((data[i].temp.average > get_trippoint(&data[i], ON)) &&
-              (!power_is_on(&data[i])))
-                set_node_output(&data[i], ON);
-          if ((data[i].temp.average < get_trippoint(&data[i], OFF)) &&
-              (power_is_on(&data[i])))
-                set_node_output(&data[i], OFF);
+      else if ((sysdata.nodes[i].setting.type == ON_OFF) ||
+               (sysdata.nodes[i].setting.type == COMPRESSOR)) {
+        if (sysdata.nodes[i].setting.mode == HEAT) {
+          if ((sysdata.nodes[i].temp.average < get_trippoint(&sysdata.nodes[i], ON)) &&
+              (!power_is_on(&sysdata.nodes[i])))
+                set_node_output(&sysdata.nodes[i], ON);
+          if ((sysdata.nodes[i].temp.average > get_trippoint(&sysdata.nodes[i], OFF)) &&
+              (power_is_on(&sysdata.nodes[i])))
+                set_node_output(&sysdata.nodes[i], OFF);
+        } else if (sysdata.nodes[i].setting.mode == COOL) {
+          if ((sysdata.nodes[i].temp.average > get_trippoint(&sysdata.nodes[i], ON)) &&
+              (!power_is_on(&sysdata.nodes[i])))
+                set_node_output(&sysdata.nodes[i], ON);
+          if ((sysdata.nodes[i].temp.average < get_trippoint(&sysdata.nodes[i], OFF)) &&
+              (power_is_on(&sysdata.nodes[i])))
+                set_node_output(&sysdata.nodes[i], OFF);
         }
       }
     }

@@ -1,0 +1,7 @@
+.*
+*.o
+*.o.*
+*.gz
+*.bz2
+*.patch
+ctrlr

@@ -9,8 +9,6 @@
 
 #include "ctrlr.h"
 
-#define CLOCKID CLOCK_REALTIME
-#define SIG SIGUSR1
 
 enum power_state power_is_on(struct node_data *data)
 {
@@ -42,7 +40,7 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
         cumulative = 0;
     percent = 100 * cumulative / PWM_PERIOD;
 
-    DEBUG("Caught signal %d from timer.  cumulative=%ld percent=%d\n", sig, cumulative, percent);
+    DEBUG("Output timer sig=%d: cumulative=%ld percent=%d\n", sig, cumulative, percent);
     for (i=0; i< NUM_NODES; i++){
         if (data[i].output.power > percent && ! data[i].output.state)
             set_output(&data[i], ON);
@@ -61,12 +59,12 @@ void *do_pwm_out(struct node_data *data){
     sa.sa_flags = SA_SIGINFO;
     sa.sa_sigaction = timer_handler;
     sigemptyset(&sa.sa_mask);
-    sigaction(SIG, &sa, NULL);
+    sigaction(SIGUSR1, &sa, NULL);
 
     sev.sigev_notify = SIGEV_SIGNAL;
-    sev.sigev_signo = SIG;
+    sev.sigev_signo = SIGUSR1;
     sev.sigev_value.sival_ptr = data;
-    timer_create(CLOCKID, &sev, &timerid);
+    timer_create(CLOCK_REALTIME, &sev, &timerid);
 
     its.it_value.tv_sec = (PWM_PERIOD / PWM_UPDATES) / 1000;
     its.it_value.tv_nsec = ((PWM_PERIOD / PWM_UPDATES) % 1000) * 1000000;

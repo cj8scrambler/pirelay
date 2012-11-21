@@ -4,12 +4,12 @@
 /* Period of 1 PWM cycle (ms) */
 #define PWM_PERIOD 1000
 
-/* # of updates per period 
+/* # of PWM updates per period 
   resolution = 1/PWM_UPDATES */
-#define PWM_UPDATES 5  /* 5% resolution */
+#define PWM_UPDATES 20  /* 5% resolution */
 
 /* Number of measured (and optionally controlled) nodes */
 #define NUM_NODES 7
 
 /* Rate that temperature samples are taken (ms) */
-#define TEMP_SAMPLE_RATE 1000
+#define TEMP_SAMPLE_RATE 5000

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <time.h>
 #include "config.h"
 
 #define MAX_NAME_LEN 24
@@ -30,7 +31,6 @@ enum debug_level {
 };
 
 struct output_data {
-  pthread_mutex_t lock;
   int   gpio;
   char  power;      /* % power * 100 */
   int  state;
@@ -38,7 +38,6 @@ struct output_data {
 };
 
 struct temp_data {
-  pthread_mutex_t lock;
   int family_id;
   long long serial_no;
   short last_reading;
@@ -59,6 +58,11 @@ struct node_data {
   struct setting_data setting;
   struct temp_data temp;
   struct output_data output;
+};
+
+struct system_data {
+  pthread_mutex_t lock;
+  struct node_data nodes[NUM_NODES];
 };
 
 int pid(int val);
