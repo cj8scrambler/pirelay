@@ -1,0 +1,8 @@
+v1.0
+  Released 11/22/12
+  Recieved 12/15/12
+  Initial layout
+
+v1.1
+  Flip rpi header so expansion board swings over rpi
+  darlington array drives gnd (not +5)
