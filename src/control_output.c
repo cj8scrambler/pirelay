@@ -24,9 +24,9 @@ static void set_output(struct node_data *data, enum power_state state){
 static void timer_handler(int sig, siginfo_t *si, void *uc) {
     struct node_data *data = si->si_value.sival_ptr;
     struct timeval  tv;
-    static long lasttime;
-    static long cumulative;
-    long newtime;
+    static unsigned long lasttime = 0;
+    static unsigned long cumulative = 0;
+    unsigned long newtime;
     char percent;
     int i;
 
@@ -40,7 +40,7 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
         cumulative = 0;
     percent = 100 * cumulative / PWM_PERIOD;
 
-    DEBUG("Output timer sig=%d: cumulative=%ld percent=%d\n", sig, cumulative, percent);
+    DEBUG("Output timer sig=%d: newtime=%ld cumulative=%ld percent=%d\n", sig, newtime, cumulative, percent);
     for (i=0; i< NUM_NODES; i++){
         if (data[i].output.power > percent && ! data[i].output.state)
             set_output(&data[i], ON);

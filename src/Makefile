@@ -19,10 +19,10 @@ CFLAGS	+= -Wall -Ilibbcm2835/src/
 # When debugging, use the following instead
 #CFLAGS	:= -O -g
 
-LDFLAGS += -Llibbcm2835/src/
-LIBS    += -lpthread -lmicrohttpd -lrt -l bcm2835
+LDFLAGS += -Llibbcm2835/src/ -L/usr/lib/arm-linux-gnueabihf
+LIBS    += -lpthread -lmicrohttpd -lrt -l bcm2835  -lmysqlclient -lz -lm -ldl
 
-SOURCES=main.c dataserver.c temp_reader.c control_output.c pid.c hardcode_settings.c
+SOURCES=main.c dataserver.c temp_reader.c control_output.c pid.c hardcode_settings.c log.c
 HEADERS=ctrlr.h config.h
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=ctrlr

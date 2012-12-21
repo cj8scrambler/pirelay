@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
+#include <mysql/mysql.h>
 #include "config.h"
 
 #define MAX_NAME_LEN 24
@@ -40,9 +41,8 @@ struct output_data {
 struct temp_data {
   int family_id;
   long long serial_no;
-  short last_reading;
-  short average;
-  short average_data[NUM_TEMP_SAMPLES];
+  int raw_reading;
+  int lowpass_reading;
 };
 
 struct setting_data {
@@ -62,6 +62,7 @@ struct node_data {
 
 struct system_data {
   pthread_mutex_t lock;
+  MYSQL *data_conn;
   struct node_data nodes[NUM_NODES];
 };
 

@@ -3,7 +3,7 @@
 struct system_data sysdata = {
   .nodes = {
     {
-      .name = "Fridge",
+      .name = "Fridge 1",
       .setting = {
         .mode = COOL,
         .type = COMPRESSOR,
@@ -14,6 +14,7 @@ struct system_data sysdata = {
       .temp = {
         .family_id = 0x28,
         .serial_no = 0x0000027b8abf,
+//        .lowpass_reading = 19312,
       },
       .output = {
         .gpio = 8, /* SPI0_CE0 */
@@ -23,9 +24,9 @@ struct system_data sysdata = {
       },
     },
     {
-      .name = "Fermenter 1",
+      .name = "Fridge 2",
       .setting = {
-        .mode = HEAT,
+        .mode = COOL,
         .type = ON_OFF,
         .setpoint = 55,
         .range = 1,

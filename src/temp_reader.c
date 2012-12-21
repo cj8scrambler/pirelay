@@ -21,17 +21,20 @@
 static int read_sensor(struct node_data *node);
 static int temp_sensor_init(struct node_data *nodes);
 char *get_last_word(char *line);
-float convert_temp(short reading);
 
 static void timer_handler(int sig, siginfo_t *si, void *uc) {
-    struct system_data *sysdata = si->si_value.sival_ptr;
-    int i;
+  struct system_data *sysdata = si->si_value.sival_ptr;
+  int i;
 
-    for (i=0; i< NUM_NODES; i++){
-      struct node_data *node = &sysdata->nodes[i];
+  for (i=0; i< NUM_NODES; i++){
+    struct node_data *node = &sysdata->nodes[i];
+    if (node && node->temp.family_id && node->temp.serial_no) {
       read_sensor(node);
-      WARN("%s: 0x%x / %.3fC\n", node->name, node->temp.last_reading, convert_temp(node->temp.last_reading));
+      WARN("%s: raw: %.1fF  lowpass: %.1fF\n", node->name,
+           TEMP_F(node->temp.raw_reading),
+           TEMP_F(node->temp.lowpass_reading) );
     }
+  }
 }
 
 void *do_temp_read(struct system_data *sysdata) {
@@ -65,13 +68,24 @@ void *do_temp_read(struct system_data *sysdata) {
   pthread_exit(0);
 }
 
+int lowpass(struct node_data *node, int temp) {
+  #define dt    (TEMP_SAMPLE_RATE / 1000.0)
+//  #define alpha (dt / (LOWPASS_RC_VALUE + dt))
+  #define alpha .15
+
+  if (node)
+    node->temp.lowpass_reading = (alpha * temp) + (1.0 - alpha) *
+                                 node->temp.lowpass_reading;
+
+  return 0;
+}
 
 int read_sensor(struct node_data *node) {
 
   char sensor_filename[MAX_SENSOR_FILENAME_LEN];
   char oneline[MAX_LINE_LEN];
   char *temp;
-  short value;
+  int value;
   int ret = -EINVAL;
   FILE *fd;
 
@@ -79,17 +93,24 @@ int read_sensor(struct node_data *node) {
   if (node && node->temp.family_id && node->temp.serial_no) {
     sprintf(sensor_filename, "%s/%x-%012llx/w1_slave", W1_DEVICE_DIR,
             node->temp.family_id, node->temp.serial_no);
+    DEBUG("filename: %s\n", sensor_filename);
     fd = fopen(sensor_filename, "r");
     if (fd) {
       if (fgets(oneline, MAX_LINE_LEN, fd) != NULL) {
+        DEBUG("%s", oneline);
         if (!strcmp(get_last_word(oneline), "YES")) {
           if (fgets(oneline, MAX_LINE_LEN, fd) != NULL) {
+            DEBUG("%s", oneline);
             temp = get_last_word(oneline);
             /* drop the leading 't=' */
             temp++;
             temp++;
             value = atoi(temp);
-            ret = 0;
+            DEBUG("Got reading of %d\n", value);
+            if (value != 85000)
+              ret = 0;
+            else
+              ret = -EFAULT;
           } else {
             ret = -EFAULT;
             WARN("Unable to read 2nd line of temp sensor for %s\n", node->name);
@@ -105,31 +126,25 @@ int read_sensor(struct node_data *node) {
       fclose(fd);
     } else {
       ret = -EFAULT;
-      ERROR("%s temp sensor configured but not found: %s\n", node->name,
-            strerror(errno));
+      ERROR("%s temp sensor configured but not found.  %s: %s\n",
+            node->name, sensor_filename, strerror(errno));
     }
   } else {
       ret = -ENODEV;
-      WARN("No sensor configured for %s\n", node->name);
+      DEBUG("No sensor configured for %s\n", node->name);
   }
 
-  if (ret == 0)
-{
-    node->temp.last_reading = value;
-WARN("good: set reading to %d\n", node->temp.last_reading);
-}
-  else if (node->setting.mode == HEAT)
-{
-    node->temp.last_reading = MAXSHORT;
-WARN("bad heat: set reading to %d\n", node->temp.last_reading);
-}
+  if (ret == 0) {
+    node->temp.raw_reading = value;
+    lowpass(node, value);
+  } else if (node->setting.mode == HEAT)
+    node->temp.raw_reading = MAXINT;
   else if (node->setting.mode == COOL)
-{
-    node->temp.last_reading = MINSHORT;
-WARN("bad cool: set reading to %d\n", node->temp.last_reading);
-}
+    node->temp.raw_reading = MININT;
+
   return ret;
 }
+
 
 char *get_last_word(char *line) {
 
@@ -149,10 +164,4 @@ char *get_last_word(char *line) {
 int temp_sensor_init(struct node_data *nodes) {
 
   return 0;
-}
-
-float convert_temp(short reading) {
-  float val = (reading >> 5) + (reading & 0x1F)/ 37.0;
-  printf ("0x%x  int: 0x%x  dec: 0x%x = %f\n", reading, reading >> 5, reading & 0x1F, val);
-  return val;
 }
