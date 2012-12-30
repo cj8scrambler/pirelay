@@ -1515,6 +1515,13 @@ ULN and UDN Series&lt;p&gt;
 <wire x1="241.3" y1="114.3" x2="241.3" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
+<net name="3.3V" class="0">
+<segment>
+<pinref part="RPI_HDR" gate="G$1" pin="3.3V@1"/>
+<wire x1="53.34" y1="63.5" x2="40.64" y2="63.5" width="0.1524" layer="91"/>
+<label x="40.64" y="63.5" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
