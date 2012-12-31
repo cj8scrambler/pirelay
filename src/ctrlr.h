@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
-#include <mysql/mysql.h>
+#include <sqlite3.h>
 #include "config.h"
 
 #define MAX_NAME_LEN 24
 #define NUM_TEMP_SAMPLES 10
+
+#define TEMP_F(c) (c * 0.0018 + 32.0)
+#define TEMP_C(c) (c / 1000.0)
 
 enum power_state {
   OFF = 0,
@@ -60,9 +63,16 @@ struct node_data {
   struct output_data output;
 };
 
+struct profile_data {
+  int id;
+  char name[MAX_NAME_LEN];
+};
+
+
 struct system_data {
   pthread_mutex_t lock;
-  MYSQL *data_conn;
+  struct sqlite3 *sqlite_db;
+  struct profile_data profile;
   struct node_data nodes[NUM_NODES];
 };
 

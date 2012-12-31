@@ -15,7 +15,10 @@
 #define TEMP_SAMPLE_RATE 2500
 
 /* Rate that all data is logged (seconds) */
-#define LOG_RATE 60
+#define LOG_RATE 5
+
+/* sqlite setings */
+#define SQLITE_DBPATH    "/home/pi/pirelay/logs.db"
 
 /* MySQL settings */
 #define MYSQL_SERVER    "localhost"

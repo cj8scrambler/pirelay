@@ -20,7 +20,8 @@ CFLAGS	+= -Wall -Ilibbcm2835/src/
 #CFLAGS	:= -O -g
 
 LDFLAGS += -Llibbcm2835/src/ -L/usr/lib/arm-linux-gnueabihf
-LIBS    += -lpthread -lmicrohttpd -lrt -l bcm2835  -lmysqlclient -lz -lm -ldl
+#LIBS    += -lpthread -lmicrohttpd -lrt -l bcm2835  -lmysqlclient -lz -lm -ldl
+LIBS    += -lpthread -lmicrohttpd -lrt -l bcm2835  -lz -lm -ldl -lsqlite3
 
 SOURCES=main.c dataserver.c temp_reader.c control_output.c pid.c hardcode_settings.c log.c
 HEADERS=ctrlr.h config.h

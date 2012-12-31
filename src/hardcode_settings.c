@@ -1,13 +1,16 @@
 #include "ctrlr.h"
 
 struct system_data sysdata = {
+  .profile = {
+      .id = 0,
+  },
   .nodes = {
     {
       .name = "Fridge 1",
       .setting = {
         .mode = COOL,
         .type = COMPRESSOR,
-        .setpoint = 40,
+        .setpoint = -10500,
         .min_compressor_time = 180,
         .range = 2,
       },
@@ -28,7 +31,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = COOL,
         .type = ON_OFF,
-        .setpoint = 55,
+        .setpoint = 10000,
         .range = 1,
       },
       .temp = {
@@ -47,7 +50,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = HEAT,
         .type = PID,
-        .setpoint = 60,
+        .setpoint = 16500,
       },
       .temp = {
         .family_id = 0,
@@ -65,7 +68,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = HEAT,
         .type = PID,
-        .setpoint = 64,
+        .setpoint = 17200,
       },
       .temp = {
         .family_id = 0,
@@ -83,7 +86,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = HEAT,
         .type = PID,
-        .setpoint = 69,
+        .setpoint = 18600,
       },
       .temp = {
         .family_id = 0,
@@ -101,7 +104,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = HEAT,
         .type = PID,
-        .setpoint = 72,
+        .setpoint = 19300,
       },
       .temp = {
         .family_id = 0,
@@ -119,7 +122,7 @@ struct system_data sysdata = {
       .setting = {
         .mode = HEAT,
         .type = PID,
-        .setpoint = 76,
+        .setpoint = 20400,
       },
       .temp = {
         .family_id = 0,

@@ -11,9 +11,6 @@
 
 #include "ctrlr.h"
 
-#define TEMP_F(c) (c * 0.0018 + 32.0)
-#define TEMP_C(c) (c / 1000.0)
-
 #define W1_DEVICE_DIR "/sys/bus/w1/devices"
 #define MAX_SENSOR_FILENAME_LEN  64
 #define MAX_LINE_LEN  160
