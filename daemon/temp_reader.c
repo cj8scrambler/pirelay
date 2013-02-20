@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <time.h>
 #include <errno.h>
 #include <limits.h> 
 #include <unistd.h>
-#include <pthread.h> 
 #include <values.h>
+#include <ctype.h>
 
 #include "ctrlr.h"
 
@@ -16,11 +15,9 @@
 #define MAX_LINE_LEN  160
 
 static int read_sensor(struct node_data *node);
-static int temp_sensor_init(struct node_data *nodes);
 char *get_last_word(char *line);
 
-static void timer_handler(int sig, siginfo_t *si, void *uc) {
-  struct system_data *sysdata = si->si_value.sival_ptr;
+void temp_timer_handler(struct system_data *sysdata) {
   int i;
 
   for (i=0; i< NUM_NODES; i++){
@@ -34,40 +31,8 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
   }
 }
 
-void *do_temp_read(struct system_data *sysdata) {
-
-  struct sigevent sev;
-  struct itimerspec its;
-  struct sigaction sa;
-  timer_t timerid;
-
-  temp_sensor_init(sysdata->nodes);
-
-  sa.sa_flags = SA_SIGINFO;
-  sa.sa_sigaction = timer_handler;
-  sigemptyset(&sa.sa_mask);
-  sigaction(SIGUSR2, &sa, NULL);
-
-  sev.sigev_notify = SIGEV_SIGNAL;
-  sev.sigev_signo = SIGUSR2;
-  sev.sigev_value.sival_ptr = sysdata;
-  timer_create(CLOCK_REALTIME, &sev, &timerid);
-
-  its.it_value.tv_sec = TEMP_SAMPLE_RATE / 1000;
-  its.it_value.tv_nsec = (TEMP_SAMPLE_RATE % 1000) * 1000000;
-  its.it_interval.tv_sec = its.it_value.tv_sec;
-  its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-  INFO("Starting temp read timer for every %f seconds\n",
-         (double)its.it_value.tv_sec + its.it_value.tv_nsec/1000000000.0);
-  timer_settime(timerid, 0, &its, NULL);
-  while(1);
-  pthread_exit(0);
-}
-
 int lowpass(struct node_data *node, int temp) {
   #define dt    (TEMP_SAMPLE_RATE / 1000.0)
-//  #define alpha (dt / (LOWPASS_RC_VALUE + dt))
   #define alpha .15
 
   if (node)
@@ -104,9 +69,9 @@ int read_sensor(struct node_data *node) {
             temp++;
             value = atoi(temp);
             DEBUG("Got reading of %d\n", value);
-            if (value != 85000)
+            if (value != 85000) {
               ret = 0;
-            else
+            } else
               ret = -EFAULT;
           } else {
             ret = -EFAULT;
@@ -118,7 +83,7 @@ int read_sensor(struct node_data *node) {
         }
       } else {
         ret = -EFAULT;
-        WARN("Unable to read sensor for %s\n", node->name);
+        WARN("Failed to read sessor for %s\n", node->name);
       }
       fclose(fd);
     } else {
@@ -128,7 +93,7 @@ int read_sensor(struct node_data *node) {
     }
   } else {
       ret = -ENODEV;
-      DEBUG("No sensor configured for %s\n", node->name);
+      INFO("No sensor configured for %s\n", node->name);
   }
 
   if (ret == 0) {
@@ -156,9 +121,4 @@ char *get_last_word(char *line) {
       last_token[strlen(last_token)-1] = '\0';
   }
   return last_token;
-}
-
-int temp_sensor_init(struct node_data *nodes) {
-
-  return 0;
 }

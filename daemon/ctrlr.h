@@ -2,10 +2,10 @@
 #include <pthread.h>
 #include <time.h>
 #include <sqlite3.h>
+#include <microhttpd.h>
 #include "config.h"
 
 #define MAX_NAME_LEN 24
-#define NUM_TEMP_SAMPLES 10
 
 #define TEMP_F(c) (c * 0.0018 + 32.0)
 #define TEMP_C(c) (c / 1000.0)
@@ -36,8 +36,8 @@ enum debug_level {
 
 struct output_data {
   int   gpio;
-  char  power;      /* % power * 100 */
-  int  state;
+  char  power;      /* % power (0-100) */
+  enum power_state  state;
   time_t lasttime;
 };
 
@@ -53,7 +53,7 @@ struct setting_data {
   enum  ctrlr_type type; /* PID, ON_OFF or COMPRESSOR */
   int setpoint;
   int min_compressor_time; /* minimum time to leave a compressor type on/off */
-  int range;             /* Ignored for PID type */
+  int range;             /* temp range around setpoint (ignored for PID) */
 };
 
 struct node_data {
@@ -72,12 +72,10 @@ struct profile_data {
 struct system_data {
   pthread_mutex_t lock;
   struct sqlite3 *sqlite_db;
+  struct MHD_Daemon *httpd;
   struct profile_data profile;
   struct node_data nodes[NUM_NODES];
 };
-
-int pid(int val);
-enum power_state power_is_on(struct node_data *data);
 
 extern int global_debug;
 

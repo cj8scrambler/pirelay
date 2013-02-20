@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#include <microhttpd.h>
 
 #include "ctrlr.h"
 
@@ -28,16 +27,8 @@ answer_to_connection (void *cls, struct MHD_Connection *connection,
   return ret;
 }
 
-void *do_data_server(struct node_data *data) {
-  struct MHD_Daemon *daemon;
-
-  daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, HTTP_PORT, NULL, NULL,
+int do_data_server(struct system_data *sysdata) {
+  sysdata->httpd = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, HTTP_PORT, NULL, NULL,
                              &answer_to_connection, NULL, MHD_OPTION_END);
-  if (NULL == daemon)
-    return NULL;
-
-  getchar ();
-
-  MHD_stop_daemon (daemon);
-  return 0;
+  return (sysdata->httpd)?0:1;
 }

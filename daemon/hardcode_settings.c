@@ -17,7 +17,7 @@ struct system_data sysdata = {
       .temp = {
         .family_id = 0x28,
         .serial_no = 0x0000027b8abf,
-//        .lowpass_reading = 19312,
+        .lowpass_reading = 19312,
       },
       .output = {
         .gpio = 8, /* SPI0_CE0 */
@@ -29,9 +29,9 @@ struct system_data sysdata = {
     {
       .name = "Fridge 2",
       .setting = {
-        .mode = COOL,
-        .type = ON_OFF,
-        .setpoint = 10000,
+        .mode = HEAT,
+        .type = PID,
+        .setpoint = 16500,
         .range = 1,
       },
       .temp = {
@@ -40,8 +40,8 @@ struct system_data sysdata = {
       },
       .output = {
         .gpio = 7, /* SPI0_CE1 */
-        .power = 0,
-        .state = 0,
+        .power = 50,
+        .state = 1,
         .lasttime = 0,
       },
     },
@@ -58,7 +58,7 @@ struct system_data sysdata = {
       },
       .output = {
         .gpio = 17,
-        .power = 100,
+        .power = 80,
         .state = 1,
         .lasttime = 0,
       },
@@ -76,7 +76,7 @@ struct system_data sysdata = {
       },
       .output = {
         .gpio = 18,
-        .power = 80,
+        .power = 20,
         .state = 0,
         .lasttime = 0,
       },

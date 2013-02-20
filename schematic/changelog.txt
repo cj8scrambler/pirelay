@@ -6,3 +6,8 @@ v1.0
 v1.1
   Flip rpi header so expansion board swings over rpi
   darlington array drives gnd (not +5)
+
+Todo
+  Add pullup on one wire bus
+  silkscreen high voltage area
+  offload PWM from CPU to hardware

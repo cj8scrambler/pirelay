@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
 #include <sqlite3.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "ctrlr.h"
 
 #define MAX_QUERY_LEN  512
 #define TIMEOUT       1000
+#define MODE_755      (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
 
-static void log_temp_to_sql(int sig, siginfo_t *si, void *uc) {
-  struct system_data *sysdata = si->si_value.sival_ptr;
+void log_timer_handler(struct system_data *sysdata) {
   int i;
   char query[MAX_QUERY_LEN];
   sqlite3_stmt *stmt;
@@ -122,15 +126,61 @@ finalize:
   return (ret);
 }
 
-static int log_init(struct system_data *sysdata)
+int log_init(struct system_data *sysdata)
 {
   sqlite3_stmt *stmt;
   int ret=-1;
+
+  char logdir[128];
+  char *cptr;
+  struct stat checkstat;
+
+  /* Make sure DB parent directory exists and is world r/w/x */
+  strcpy(logdir, SQLITE_DBPATH);
+  cptr = strrchr(logdir, '/');
+  if (!cptr) {
+    ERROR("Error: Invalid DB pathname: %s\n", SQLITE_DBPATH);
+    goto ret;
+  }  
+  *cptr='\0';
+  if (stat(logdir, &checkstat)) {
+    if (mkdir(logdir, MODE_755)) {
+      ERROR("Error: Could not create database directory (%s): %s\n",
+            logdir, strerror(errno));
+      goto ret;
+    }
+    INFO("Created database directory %s\n", logdir);
+    stat(logdir, &checkstat);
+  }
+  if (!S_ISDIR(checkstat.st_mode)){
+    ERROR("Error: DB directory (%s) is not a valid directory\n", logdir);
+    goto ret;
+  }
+  if (!(checkstat.st_mode & (S_IROTH|S_IWOTH|S_IXOTH))) {
+    if (chmod(logdir, (S_IROTH|S_IXOTH))) {
+      ERROR("Error: could not make database directory (%s) accessible: %s\n",
+            logdir, strerror(errno));
+      goto ret;
+    }
+  }
 
   if (sqlite3_open_v2(SQLITE_DBPATH, &(sysdata->sqlite_db),
                  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL)) { 
     ERROR("%s\n", sqlite3_errmsg(sysdata->sqlite_db));
     goto ret;
+  }
+
+  /* Make sure DB is world readable */
+  if (stat(SQLITE_DBPATH, &checkstat)) {
+    ERROR("Error: could not find database file: %s\n", SQLITE_DBPATH);
+    goto ret;
+  }
+  if (!(checkstat.st_mode & S_IROTH)) {
+    if (chmod(SQLITE_DBPATH, S_IROTH)) {
+      ERROR("Error: could not make database world readable\n");
+      goto ret;
+    }
+    INFO("Updated database permissions to world readable\n");
   }
 
   sqlite3_busy_timeout(sysdata->sqlite_db, TIMEOUT);
@@ -173,38 +223,7 @@ ret:
   return (ret);
 }
 
-static void log_cleanup(struct system_data *sysdata) {
+void log_cleanup(struct system_data *sysdata) {
   if (sysdata->sqlite_db)
     sqlite3_close(sysdata->sqlite_db);
-}
-
-void *do_log(struct system_data *sysdata) {
-  struct sigevent sev;
-  struct itimerspec its;
-  struct sigaction sa;
-  timer_t timerid;
-
-  if (log_init(sysdata))
-    return(NULL);
-
-  sa.sa_flags = SA_SIGINFO;
-  sa.sa_sigaction = log_temp_to_sql;
-  sigemptyset(&sa.sa_mask);
-  sigaction(SIGALRM, &sa, NULL);
-
-  sev.sigev_notify = SIGEV_SIGNAL;
-  sev.sigev_signo = SIGALRM;
-  sev.sigev_value.sival_ptr = sysdata;
-  timer_create(CLOCK_REALTIME, &sev, &timerid);
-
-  its.it_value.tv_sec = LOG_RATE;
-  its.it_value.tv_nsec = 0;
-  its.it_interval.tv_sec = its.it_value.tv_sec;
-  its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-  INFO("Starting logger timer for every %d seconds\n", (int)its.it_value.tv_sec);
-  timer_settime(timerid, 0, &its, NULL);
-  while(1);
-  log_cleanup(sysdata);
-  pthread_exit(0);
 }
