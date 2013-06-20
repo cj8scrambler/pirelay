@@ -13,43 +13,35 @@ enum power_state power_is_on(struct node_data *data)
   return data->output.state;
 }
 
-static void set_output(struct node_data *data, enum power_state state){
-  DEBUG("%s(%d, %d)\n", __func__, data->output.gpio, (uint8_t)state);
-  bcm2835_gpio_write(data->output.gpio, (uint8_t) state);
-  data->output.state = state;
-}
-
-void output_timer_handler(struct node_data *data){
-  struct timeval  tv;
-  static unsigned long lasttime = 0;
-  static unsigned long cumulative = 0;
-  unsigned long newtime;
-  char percent;
-  int i;
-
-  gettimeofday(&tv, NULL);
-  newtime = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-
-  /* calculate how far into the period we are */
-  cumulative += (newtime - lasttime);
-  lasttime = newtime;
-  if (cumulative >= (PWM_UPDATES * TIMER_BASE_PERIOD))
-    cumulative = 0;
-  percent = 100 * cumulative / (PWM_UPDATES * TIMER_BASE_PERIOD);
-
-  DEBUG("Output timer newtime=%ld cumulative=%ld percent=%d\n", newtime, cumulative, percent);
-  for (i=0; i< NUM_NODES; i++){
-    if (data[i].output.power > percent && ! data[i].output.state)
-      set_output(&data[i], ON);
-    else if (data[i].output.power < percent && data[i].output.state)
-      set_output(&data[i], OFF);
-  }
-}
-
 void output_disable_all(struct node_data *data){
   int i;
 
   for (i=0; i< NUM_NODES; i++){
-      set_output(&data[i], OFF);
+    data[i].output.state = OFF;
   }
+}
+
+int update_outputs(struct node_data *data) {
+
+  int i;
+  char spi_data[NUM_NODES];
+
+  bcm2835_spi_begin();
+  bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+  bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+  bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256); /* 1MHz */
+  bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
+  bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+  for (i=0; i< NUM_NODES; i++) {
+    if (data[i].output.state == OFF) {
+      DEBUG("Setting node %d power to 0x%2x (%.1f)\n", i+1, 0, 0.0);
+      spi_data[i] = 0;
+    } else {
+      DEBUG("Setting node %d power to 0x%2x (%.1f)\n", i+1, data[i].output.power, data[i].output.power/2.560);
+      spi_data[i] = data[i].output.power;
+    }
+  }
+  bcm2835_spi_transfern(spi_data, NUM_NODES);
+  bcm2835_spi_end();
+  return 0;
 }

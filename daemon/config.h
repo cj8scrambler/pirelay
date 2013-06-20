@@ -20,7 +20,7 @@
 #define LOG_RATE (100 * TIMER_BASE_PERIOD) /* 10 seconds */
 
 /* Number of measured (and optionally controlled) nodes */
-#define NUM_NODES 8
+#define NUM_NODES 9
 
 /* sqlite setings */
 #define SQLITE_DBPATH    "/var/www/pirelay/logs.db"

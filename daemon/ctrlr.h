@@ -36,7 +36,7 @@ enum debug_level {
 
 struct output_data {
   int   gpio;
-  char  power;      /* % power (0-100) */
+  char  power;      /* % power (0-255) */
   enum power_state  state;
   time_t lasttime;
 };

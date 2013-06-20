@@ -38,29 +38,12 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
 
   struct timeval current;
   struct timeval delta = {0};
-  static struct timeval next_output_time = {0};
-  static int output_overflow = 0;
   static struct timeval next_temp_time = {0};
   static int temp_overflow = 0;
   static struct timeval next_log_time = {0};
   static int log_overflow = 0;
 
   gettimeofday(&current, NULL);
-
-  /* Run the output control if it's been long enough */
-  if (!timercmp(&current, &next_output_time, <)) {
-    output_timer_handler(sysdata->nodes);
-
-    /* check for overflow */
-    timersub(&current, &next_output_time, &delta);
-    if ((delta.tv_sec * 1000 + delta.tv_usec / 1000) > TIMER_BASE_PERIOD) {
-      DEBUG("output timer overflow: %.3f secs (#%d)\n", 
-            (delta.tv_sec + delta.tv_usec / 1000000.0), ++output_overflow);
-    }
-    delta.tv_sec = TIMER_BASE_PERIOD / 1000;
-    delta.tv_usec = (TIMER_BASE_PERIOD * 1000) % 1000000;
-    timeradd(&current, &delta, &next_output_time);
-  }
 
   /* Read the temp sensors if it's been long enough */
   if (!timercmp(&current, &next_temp_time, <)) {
@@ -96,18 +79,12 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
 
 static int hw_init(struct node_data *nodes) {
 
-  int i;
-
   if (!bcm2835_init()) {
     ERROR("Could not initialize bcm2835 library.\nTry running as root\n");
     return(-1);
   }
 
-  /* Configure GPIOs for output */
-  for (i=1; i<NUM_NODES; i++){
-    bcm2835_gpio_write(nodes[i].output.gpio, nodes[i].output.state);
-    bcm2835_gpio_fsel(nodes[i].output.gpio, BCM2835_GPIO_FSEL_OUTP);
-  }
+  update_outputs(nodes);
 
   return 0;
 }
@@ -140,9 +117,9 @@ void set_node_output(struct node_data *node, enum power_state state)
   }
 
   if (state == ON)
-    node->output.power = 100;
+    node->output.power = 0xFF;
   else
-    node->output.power = 0;
+    node->output.power = 0x00;
 
   node->output.lasttime = time(NULL);
 }
@@ -217,6 +194,7 @@ ERROR("Start\n");
         }
       }
     }
+//update_outputs(sysdata.nodes);
   }
 
   timer_delete(&timerid);
