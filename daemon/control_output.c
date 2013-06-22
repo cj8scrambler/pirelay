@@ -10,15 +10,7 @@
 
 enum power_state power_is_on(struct node_data *data)
 {
-  return data->output.state;
-}
-
-void output_disable_all(struct node_data *data){
-  int i;
-
-  for (i=0; i< NUM_NODES; i++){
-    data[i].output.state = OFF;
-  }
+  return (data->output.state);
 }
 
 int update_outputs(struct node_data *data) {
@@ -45,3 +37,13 @@ int update_outputs(struct node_data *data) {
   bcm2835_spi_end();
   return 0;
 }
+
+void output_disable_all(struct node_data *data){
+  int i;
+
+  for (i=0; i< NUM_NODES; i++){
+    data[i].output.state = OFF;
+  }
+  update_outputs(data);
+}
+

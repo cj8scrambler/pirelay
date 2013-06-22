@@ -8,11 +8,6 @@
  */
 #define TIMER_BASE_PERIOD 100
 
-/* Number of PWM updates per PWM period
-     PWM resolution % = 1/PWM_UPDATES
-     PWM period = TIMER_BASE_PERIOD * PWM_UPDATES */
-#define PWM_UPDATES 20  /* 5% resolution & 2 ms period */
-
 /* Rate that temperature samples are taken (ms) */
 #define TEMP_SAMPLE_RATE (50 * TIMER_BASE_PERIOD) /* 5 seconds */
 

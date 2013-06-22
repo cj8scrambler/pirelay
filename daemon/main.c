@@ -12,7 +12,7 @@
 #include "temp_reader.h"
 #include "dataserver.h"
 
-int global_debug = INFO;
+int global_debug = ERROR;
 static int quit = 0;
 
 static void cleanup(int signum) {
@@ -21,7 +21,7 @@ static void cleanup(int signum) {
   ERROR("Shutting Down\n");
 
   quit = 1;
-  MHD_stop_daemon (sysdata.httpd);
+  dataserver_stop(&sysdata);
   log_cleanup(&sysdata);
   output_disable_all(sysdata.nodes);
   bcm2835_close();
@@ -164,7 +164,7 @@ ERROR("Start\n");
          (double)its.it_value.tv_sec + its.it_value.tv_nsec/1000000000.0);
     timer_settime(timerid, 0, &its, NULL);
 
-  if (do_data_server(&sysdata)) {
+  if (dataserver_start(&sysdata)) {
     ERROR("Could not start data server\n");
     cleanup(-1);
   }

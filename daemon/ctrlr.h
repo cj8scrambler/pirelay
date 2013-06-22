@@ -10,6 +10,12 @@
 #define TEMP_F(c) (c * 0.0018 + 32.0)
 #define TEMP_C(c) (c / 1000.0)
 
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+#define container_of(ptr, type, member) ({                      \
+        const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
+        (type *)( (char *)__mptr - offsetof(type,member) );})
+
 enum power_state {
   OFF = 0,
   ON = 1,
@@ -19,6 +25,7 @@ enum ctrlr_type {
   PID,
   ON_OFF,
   COMPRESSOR, /* ON_OFF plus minimum ON/OFF times */
+  DISABLED,
 };
 
 enum ctrlr_mode {
@@ -35,7 +42,6 @@ enum debug_level {
 };
 
 struct output_data {
-  int   gpio;
   char  power;      /* % power (0-255) */
   enum power_state  state;
   time_t lasttime;

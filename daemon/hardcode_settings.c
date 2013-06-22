@@ -16,11 +16,11 @@ struct system_data sysdata = {
       },
       .temp = {
         .family_id = 0x28,
-        .serial_no = 0x0000027b8abf,
+/*        .serial_no = 0x0000027b8abf, */
+        .serial_no = 0,
         .lowpass_reading = 19312,
       },
       .output = {
-        .gpio = 8, /* SPI0_CE0 */
         .power = 0,
         .state = 0,
         .lasttime = 0,
@@ -39,7 +39,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 7, /* SPI0_CE1 */
         .power = 50,
         .state = 1,
         .lasttime = 0,
@@ -57,7 +56,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 17,
         .power = 80,
         .state = 1,
         .lasttime = 0,
@@ -75,7 +73,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 18,
         .power = 20,
         .state = 0,
         .lasttime = 0,
@@ -93,7 +90,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 22,
         .power = 52,
         .state = 0,
         .lasttime = 0,
@@ -111,7 +107,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 23,
         .power = 17,
         .state = 0,
         .lasttime = 0,
@@ -129,7 +124,6 @@ struct system_data sysdata = {
         .serial_no = 0,
       },
       .output = {
-        .gpio = 24,
         .power = 0,
         .state = 0,
         .lasttime = 0,
