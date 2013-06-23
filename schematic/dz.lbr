@@ -388,12 +388,13 @@
 <rectangle x1="11.176" y1="-0.254" x2="11.684" y2="0.254" layer="51"/>
 <rectangle x1="8.636" y1="-0.254" x2="9.144" y2="0.254" layer="51"/>
 <text x="-12.065" y="-3.175" size="1.27" layer="21">H</text>
-<text x="-9.525" y="-3.175" size="1.27" layer="21">1</text>
-<text x="-6.985" y="-3.175" size="1.27" layer="21">2</text>
-<text x="-4.445" y="-3.175" size="1.27" layer="21">3</text>
-<text x="-1.905" y="-3.175" size="1.27" layer="21">4</text>
-<text x="0.635" y="-3.175" size="1.27" layer="21">5</text>
-<text x="3.175" y="-3.175" size="1.27" layer="21">6</text>
+<text x="-6.985" y="-3.175" size="1.27" layer="21">1</text>
+<text x="-4.445" y="-3.175" size="1.27" layer="21">2</text>
+<text x="-1.905" y="-3.175" size="1.27" layer="21">3</text>
+<text x="0.635" y="-3.175" size="1.27" layer="21">4</text>
+<text x="3.175" y="-3.175" size="1.27" layer="21">5</text>
+<text x="5.715" y="-3.175" size="1.27" layer="21">6</text>
+<text x="-9.525" y="-3.175" size="1.27" layer="21">H</text>
 </package>
 <package name="R0603">
 <wire x1="-0.432" y1="-0.356" x2="0.432" y2="-0.356" width="0.1524" layer="51"/>

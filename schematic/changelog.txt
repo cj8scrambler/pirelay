@@ -7,7 +7,10 @@ v1.1
   Flip rpi header so expansion board swings over rpi
   darlington array drives gnd (not +5)
 
-Todo
-  Add pullup on one wire bus
+v2.0
+  Released 6/22/12
+  Ordered 3 from oshpark.com
+  Replace darlington array with 3 WS2801 to do PWM in hardware
+  Add 9th relay output
   silkscreen high voltage area
-  offload PWM from CPU to hardware
+  Add pullup on one wire bus
