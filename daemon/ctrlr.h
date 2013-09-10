@@ -63,6 +63,7 @@ struct setting_data {
 };
 
 struct node_data {
+  int id;
   char name[MAX_NAME_LEN];
   struct setting_data setting;
   struct temp_data temp;
@@ -86,6 +87,10 @@ struct system_data {
 extern int global_debug;
 
 #define DEBUG(format, args...) if (global_debug >= DEBUG){ fprintf (stdout, "%s(): " format , __func__, ##args); }
+#define DEBUG_DUMP(format, args...) if (global_debug >= DEBUG){ fprintf (stdout, format, ##args); }
 #define INFO(format, args...)  if (global_debug >= INFO){  fprintf (stdout, "%s(): " format , __func__, ##args); }
+#define INFO_DUMP(format, args...)  if (global_debug >= INFO){  fprintf (stdout, format, ##args); }
 #define WARN(format, args...)  if (global_debug >= WARN){  fprintf (stdout, "%s(): " format , __func__, ##args); }
+#define WARN_DUMP(format, args...)  if (global_debug >= WARN){  fprintf (stdout, format, ##args); }
 #define ERROR(format, args...) if (global_debug >= ERROR){ fprintf (stderr, "%s(): " format , __func__, ##args); }
+#define ERROR_DUMP(format, args...) if (global_debug >= ERROR){ fprintf (stderr, format, ##args); }

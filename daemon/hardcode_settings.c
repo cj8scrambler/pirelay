@@ -6,6 +6,7 @@ struct system_data sysdata = {
   },
   .nodes = {
     {
+      .id = 1,
       .name = "Fridge 1",
       .setting = {
         .mode = COOL,
@@ -27,6 +28,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 2,
       .name = "Fridge 2",
       .setting = {
         .mode = HEAT,
@@ -45,6 +47,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 3,
       .name = "Fermenter 2",
       .setting = {
         .mode = HEAT,
@@ -62,6 +65,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 4,
       .name = "Fermenter 3",
       .setting = {
         .mode = HEAT,
@@ -79,6 +83,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 5,
       .name = "Fermenter 4",
       .setting = {
         .mode = HEAT,
@@ -96,6 +101,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 6,
       .name = "Fermenter 5",
       .setting = {
         .mode = HEAT,
@@ -113,6 +119,7 @@ struct system_data sysdata = {
       },
     },
     {
+      .id = 7,
       .name = "Fermenter 6",
       .setting = {
         .mode = HEAT,
