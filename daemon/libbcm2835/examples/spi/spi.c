@@ -5,14 +5,14 @@
 //
 // After installing bcm2835, you can build this 
 // with something like:
-// gcc -o spi  -l rt spi.c -l bcm2835
+// gcc -o spi spi.c -l bcm2835
 // sudo ./spi
 //
 // Or you can test it before installing with:
-// gcc -o spi  -l rt -I ../../src ../../src/bcm2835.c spi.c
+// gcc -o spi -I ../../src ../../src/bcm2835.c spi.c
 // sudo ./spi
 //
-// Author: Mike McCauley (mikem@open.com.au)
+// Author: Mike McCauley
 // Copyright (C) 2012 Mike McCauley
 // $Id: RF22.h,v 1.21 2012/05/30 01:51:25 mikem Exp $
 
@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     printf("Read from SPI: %02X\n", data);
 
     bcm2835_spi_end();
+    bcm2835_close();
     return 0;
 }
 

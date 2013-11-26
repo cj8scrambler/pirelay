@@ -3,8 +3,6 @@
 
 /* Main timer period in ms
      This timer is used as the basis for all events in the system.
-     This is the max resolution of the PWM output signal and is also
-     used as a base timer for temp sampling and data logging.
  */
 #define TIMER_BASE_PERIOD 100
 
@@ -17,5 +15,5 @@
 /* Number of measured (and optionally controlled) nodes */
 #define NUM_NODES 9
 
-/* sqlite setings */
+/* sqlite database */
 #define SQLITE_DBPATH    "/var/www/pirelay/logs.db"

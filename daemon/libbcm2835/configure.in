@@ -1,10 +1,10 @@
 dnl -*-autoconf-*-
 dnl bcm2835: Autoconf script
 dnl 
-dnl $Id: configure.in,v 1.12 2009/08/12 09:43:22 mikem Exp mikem $
-dnl (C) 2012 Mike McCauley (mikem@open.com.au)
+dnl $Id: configure.in,v 1.1 2012/12/01 22:56:52 mikem Exp mikem $
+dnl (C) 2012 Mike McCauley (mikem@airspayce.com)
 
-AC_INIT([bcm2835], [1.12], [mikem@open.com.au])
+AC_INIT([bcm2835], [1.33], [mikem@airspayce.com])
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE()

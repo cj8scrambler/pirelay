@@ -79,6 +79,11 @@ static void timer_handler(int sig, siginfo_t *si, void *uc) {
 
 static int hw_init(struct node_data *nodes) {
 
+  if (system("grep -q BCM2708 /proc/cpuinfo")) {
+    /* For hardware other than Raspberry Pi, use debug mode */
+    bcm2835_set_debug(1);
+  }
+
   if (!bcm2835_init()) {
     ERROR("Could not initialize bcm2835 library.\nTry running as root\n");
     return(-1);

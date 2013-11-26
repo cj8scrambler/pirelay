@@ -5,9 +5,12 @@ EXTRA_DIST = examples/blink/blink.c \
 examples/input/input.c \
 examples/event/event.c \
 examples/spi/spi.c \
-examples/spin/spin.c 
+examples/spin/spin.c \
+examples/pwm/pwm.c \
+examples/i2c/i2c.c \
+examples/gpio/gpio.c 
 
 upload:
-	rsync -avz @PACKAGE_TARNAME@-@VERSION@.tar.gz doc/html/ server2:/var/www/html/mikem/@PACKAGE_NAME@
+	rsync -avz @PACKAGE_TARNAME@-@VERSION@.tar.gz doc/html/ www.airspayce.com:public_html/mikem/@PACKAGE_NAME@
 
 

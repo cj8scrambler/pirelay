@@ -5,14 +5,14 @@
 //
 // After installing bcm2835, you can build this 
 // with something like:
-// gcc -o input  -l rt input.c -l bcm2835
+// gcc -o input input.c -l bcm2835
 // sudo ./input
 //
 // Or you can test it before installing with:
-// gcc -o input  -l rt -I ../../src ../../src/bcm2835.c input.c
+// gcc -o input -I ../../src ../../src/bcm2835.c input.c
 // sudo ./input
 //
-// Author: Mike McCauley (mikem@open.com.au)
+// Author: Mike McCauley
 // Copyright (C) 2011 Mike McCauley
 // $Id: RF22.h,v 1.21 2012/05/30 01:51:25 mikem Exp $
 
@@ -47,6 +47,7 @@ int main(int argc, char **argv)
 	delay(500);
     }
 
+    bcm2835_close();
     return 0;
 }
 

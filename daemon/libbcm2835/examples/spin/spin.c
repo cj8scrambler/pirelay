@@ -5,14 +5,14 @@
 //
 // After installing bcm2835, you can build this 
 // with something like:
-// gcc -o spin  -l rt spin.c -l bcm2835
+// gcc -o spin spin.c -l bcm2835
 // sudo ./spin
 //
 // Or you can test it before installing with:
-// gcc -o spin  -l rt -I ../../src ../../src/bcm2835.c spin.c
+// gcc -o spin -I ../../src ../../src/bcm2835.c spin.c
 // sudo ./spin
 //
-// Author: Mike McCauley (mikem@open.com.au)
+// Author: Mike McCauley
 // Copyright (C) 2012 Mike McCauley
 // $Id: RF22.h,v 1.21 2012/05/30 01:51:25 mikem Exp $
 
@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     printf("Read from SPI: %02X  %02X  %02X  %02X \n", buf[0], buf[1], buf[2], buf[3]);
     
     bcm2835_spi_end();
+    bcm2835_close();
     return 0;
 }
 

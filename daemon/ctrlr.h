@@ -2,6 +2,8 @@
 #include <pthread.h>
 #include <time.h>
 #include <sqlite3.h>
+#include <inttypes.h>
+#include <sys/socket.h>
 #include <microhttpd.h>
 #include "config.h"
 

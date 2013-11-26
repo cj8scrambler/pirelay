@@ -5,14 +5,14 @@
 //
 // After installing bcm2835, you can build this 
 // with something like:
-// gcc -o event -l rt event.c -l bcm2835 
+// gcc -o event event.c -l bcm2835 
 // sudo ./event
 //
 // Or you can test it before installing with:
-// gcc -o event -l rt -I ../../src ../../src/bcm2835.c event.c
+// gcc -o event -I ../../src ../../src/bcm2835.c event.c
 // sudo ./event
 //
-// Author: Mike McCauley (mikem@open.com.au)
+// Author: Mike McCauley
 // Copyright (C) 2011 Mike McCauley
 // $Id: RF22.h,v 1.21 2012/05/30 01:51:25 mikem Exp $
 
@@ -51,6 +51,7 @@ int main(int argc, char **argv)
 	delay(500);
     }
 
+    bcm2835_close();
     return 0;
 }
 
